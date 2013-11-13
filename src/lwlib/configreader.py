@@ -42,16 +42,23 @@ class ConfigReader(object):
     self.config['parser'] = []
     self.__parse()
   
+  def __unescape(self, string):
+    return string.replace("\\n", "\n").replace("\\t", "\t")
+  
   def __parse(self):
     raw = ConfigReader.COLLECTOR_DECLARATION.parseFile(self.configfilename).asDict()
+
     for option in raw['config']['options']:
       self.config['options'][option[0]] = option[1]
+
     for var in raw['varsSection']['vars']:
       varName = var[0]
       funcName = var[1]
       args = var[2:]
       self.config['vars'][varName] = [funcName] + args
+
     for directive in raw['parser']['directives']:
+      directive = [self.__unescape(x) for x in directive]
       self.config['parser'].append(directive)
       
 # testing
