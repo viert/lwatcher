@@ -61,6 +61,13 @@ class ConfigReader(object):
       directive = [self.__unescape(x) for x in directive]
       self.config['parser'].append(directive)
       
+    try:  
+      (period, deviation) = self.config['options']['period'].split(',')
+      self.config['options']['period'] = int(period)
+      self.config['options']['deviation'] = int(deviation)
+    except Exception as e:
+      raise ValueError("error parsing 'period' option: " + repr(e))
+      
 # testing
 if __name__ == '__main__':
   cr = ConfigReader("../conf/example.conf")
