@@ -6,7 +6,7 @@ class FileKeeper(object):
   def __init__(self):
     self.filestore = {}
   
-  def read(filename):
+  def read(self, filename):
     data = ''
     
     if filename in self.filestore.keys():

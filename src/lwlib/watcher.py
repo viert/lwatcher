@@ -4,18 +4,22 @@ from configreader import ConfigReader
 from tasks import Task, Scheduler
 from parser import LogParser
 from store import Store
+from filekeeper import FileKeeper
 import os
 import logging
+
 
 
 class Watcher(object):
 
   def __init__(self, config_directory, log_filename):
     self.config_directory = config_directory
-    logging.basicConfig(filename=log_filename, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(filename=log_filename, level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     self.tables = {}
     self.reconfigureTasks()
-    self.scheduler = Scheduler(self.tasks)
+    self.filekeeper = FileKeeper()
+    self.scheduler = Scheduler(self.tasks, self.filekeeper, self.tables)
+    self.scheduler.start()
     
   def reconfigureTasks(self):
     self.tasks = []
@@ -31,6 +35,8 @@ class Watcher(object):
         for directive in c.config['parser']:
           if directive[0] == 'index':
             index_fields.append(directive[1])
+        # empty store
         self.tables[collector_name] = Store(index_fields)
-        task = Task(collector_name, c.config['options']['log'], LogParser(c.config['parser']), c.config['vars'], c.config['options']['period'], c.config['options']['deviation'], self.tables[collector_name])
+        
+        task = Task(collector_name, c.config['options']['log'], LogParser(c.config['parser']), c.config['vars'], c.config['options']['period'], c.config['options']['deviation'], index_fields)
         self.tasks.append(task)
