@@ -5,9 +5,7 @@ from tasks import Task, Scheduler
 from parser import LogParser
 from store import Store
 from filekeeper import FileKeeper
-import os
-import logging
-
+import os, logging
 
 
 class Watcher(object):
@@ -19,8 +17,13 @@ class Watcher(object):
     self.reconfigureTasks()
     self.filekeeper = FileKeeper()
     self.scheduler = Scheduler(self.tasks, self.filekeeper, self.tables)
+
+  def start(self):
     self.scheduler.start()
-    
+
+  def stop(self):
+    self.scheduler.stop()
+
   def reconfigureTasks(self):
     self.tasks = []
     for f in os.listdir(self.config_directory):

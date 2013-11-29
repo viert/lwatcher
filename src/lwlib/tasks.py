@@ -124,6 +124,11 @@ class Scheduler(StoppableThread):
       worker.start()
       self.pool.append(worker)
   
+  def stop(self):
+    for thread in pool:
+      thread.stop()
+    StoppableThread.stop(self)
+
   def run(self):
     while not self._stopped:
       time.sleep(1.0)
