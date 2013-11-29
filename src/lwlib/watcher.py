@@ -5,7 +5,7 @@ from tasks import Task, Scheduler
 from parser import LogParser
 from store import Store
 from filekeeper import FileKeeper
-import os, logging
+import os, logging, cherrypy
 
 
 class Watcher(object):
@@ -20,6 +20,7 @@ class Watcher(object):
 
   def start(self):
     self.scheduler.start()
+    cherrypy.quickstart(self)
 
   def stop(self):
     self.scheduler.stop()
@@ -43,3 +44,7 @@ class Watcher(object):
         
         task = Task(collector_name, c.config['options']['log'], LogParser(c.config['parser']), c.config['vars'], c.config['options']['period'], c.config['options']['deviation'], index_fields)
         self.tasks.append(task)
+  @cherrypy.expose  
+  def index(self):
+    return "Hello!"
+

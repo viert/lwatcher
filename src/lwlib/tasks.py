@@ -121,15 +121,16 @@ class Scheduler(StoppableThread):
     self.pool = []
     for i in xrange(numThreads):
       worker = Worker(self.queue, self.filekeeper, metastore)
-      worker.start()
       self.pool.append(worker)
   
   def stop(self):
-    for thread in pool:
-      thread.stop()
+    for worker in self.pool:
+      worker.stop()
     StoppableThread.stop(self)
 
   def run(self):
+    for worker in self.pool:
+      worker.start()
     while not self._stopped:
       time.sleep(1.0)
       for task in self.tasks:
