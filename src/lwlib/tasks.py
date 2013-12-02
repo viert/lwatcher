@@ -46,9 +46,13 @@ class StoppableThread(threading.Thread):
   def __init__(self):
     self._stopped = False
     threading.Thread.__init__(self)
+    self.state = 'initializing'
+    self.daemon = True
     
   def stop(self):
+    self.state = 'stopping'
     self._stopped = True
+
   
 class Worker(StoppableThread):
   def __init__(self, queue, filekeeper, metastore, thread_id):
@@ -58,7 +62,6 @@ class Worker(StoppableThread):
     self.thread_id = thread_id
     self.queue = queue
     self.performing_task = None
-    self.state = 'initializing'
     
   def performTask(self, task):
     self.performing_task = task
@@ -96,16 +99,20 @@ class Worker(StoppableThread):
     return "[Worker #%s %s]" % (self.thread_id, self.state)
     
   def run(self):
-    while not self._stopped:
-      self.state = 'sleeping'
-      # sleeping up to 100ms for cpu idle
-      time.sleep(random.random()/10)
-      self.state = 'getting task from queue'
-      try:
-        task = self.queue.get_nowait()
-      except Queue.Empty:
-        continue
-      self.performTask(task)
+    try:
+      while not self._stopped:
+        self.state = 'sleeping'
+        # sleeping up to 250ms for cpu idle
+        time.sleep(random.random()/4)
+        self.state = 'getting task from queue'
+        try:
+          task = self.queue.get_nowait()
+        except Queue.Empty:
+          continue
+        self.performTask(task)
+    except:
+      self.stop()
+    self.state = 'stopped'
   
   
 class Scheduler(StoppableThread):
@@ -126,11 +133,16 @@ class Scheduler(StoppableThread):
     StoppableThread.stop(self)
 
   def run(self):
-    for worker in self.pool:
-      worker.start()
-    while not self._stopped:
-      time.sleep(1.0)
-      for task in self.tasks:
-        if task.isReady():
-          logging.debug("[scheduler] Task %s put to queue" % task)
-          self.queue.put(task.setQueued())
+    self.state = 'running'
+    try:
+      for worker in self.pool:
+        worker.start()
+      while not self._stopped:
+        time.sleep(1.0)
+        for task in self.tasks:
+          if task.isReady():
+            logging.debug("[scheduler] Task %s put to queue" % task)
+            self.queue.put(task.setQueued())
+    except:
+      self.stop()
+    self.state = 'stopped'

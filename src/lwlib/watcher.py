@@ -51,7 +51,7 @@ class Watcher(object):
           except KeyError, e:
             logging.warn('Error importing function "%s" from module "%s"' % (module_name, func_name))
             continue
-        key = '.'.join(module_name, func_name)
+        key = '.'.join([module_name, func_name])
         self.functions[key] = func
 
   def reconfigureTasks(self):

@@ -2,6 +2,7 @@
 
 from lwlib import Watcher
 from flask import Flask, make_response, request
+import sys
 
 watcher = Watcher('./conf', 'testwatcher.log', './plugins')
 app = Flask('WatcherApplication')
@@ -24,8 +25,14 @@ def index():
   result += "\n"
   result += "=== Functions ===\n\n"
   for key in watcher.functions.keys():
-    result += key + "\n"
-  
+    doc = watcher.functions[key].__doc__
+    result += key
+    if len(doc) > 0:
+      result += "\n"
+      for line in doc.split("\n"):
+        result += "    " + line + "\n"
+    result += "\n"
+    
   resp = make_response(result, 200)
   resp.headers['Content-Type'] = 'text/plain'
   return resp

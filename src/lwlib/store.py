@@ -8,6 +8,12 @@ class Store(object):
     self.indexes = {}
     for field in index_fields:
       self.addIndex(field)
+
+  def fields(self):
+    if len(self.table) == 0:
+      return []
+    else:
+      return self.table[0].keys()
     
   def addIndex(self, field):
     if not field in self.indexes.keys():
