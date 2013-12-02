@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from lwlib import Watcher
-from pprint import pprint
+from www.dispatcher import startApplication
 
-app = Watcher("./conf", "testwatcher.log")
-app.start()
+startApplication()

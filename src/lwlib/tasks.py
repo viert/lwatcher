@@ -42,8 +42,6 @@ class Task(object):
   def isReady(self):
     return not self.processing and (time.time() >= self.nextStart)
 
-
-
 class StoppableThread(threading.Thread):
   def __init__(self):
     self._stopped = False
@@ -51,14 +49,13 @@ class StoppableThread(threading.Thread):
     
   def stop(self):
     self._stopped = True
-
-
   
 class Worker(StoppableThread):
-  def __init__(self, queue, filekeeper, metastore):
+  def __init__(self, queue, filekeeper, metastore, thread_id):
     StoppableThread.__init__(self)
     self.metastore = metastore
     self.filekeeper = filekeeper
+    self.thread_id = thread_id
     self.queue = queue
     self.performing_task = None
     self.state = 'initializing'
@@ -96,7 +93,7 @@ class Worker(StoppableThread):
     task.setDone()
   
   def __repr__(self):
-    return "<Worker %d> %s" % (threading.Thread.ident, self.state)
+    return "[Worker #%s %s]" % (self.thread_id, self.state)
     
   def run(self):
     while not self._stopped:
@@ -120,7 +117,7 @@ class Scheduler(StoppableThread):
     self.queue = Queue.Queue()
     self.pool = []
     for i in xrange(numThreads):
-      worker = Worker(self.queue, self.filekeeper, metastore)
+      worker = Worker(self.queue, self.filekeeper, metastore, i+1)
       self.pool.append(worker)
   
   def stop(self):

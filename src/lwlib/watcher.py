@@ -5,25 +5,54 @@ from tasks import Task, Scheduler
 from parser import LogParser
 from store import Store
 from filekeeper import FileKeeper
-import os, logging, cherrypy
-
+import os, logging, sys
 
 class Watcher(object):
 
-  def __init__(self, config_directory, log_filename):
+  def __init__(self, config_directory, log_filename, plugin_directory):
     self.config_directory = config_directory
+    self.plugin_directory = plugin_directory
     logging.basicConfig(filename=log_filename, level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    self.functions = {}
     self.tables = {}
     self.reconfigureTasks()
+    self.importPlugins()
     self.filekeeper = FileKeeper()
     self.scheduler = Scheduler(self.tasks, self.filekeeper, self.tables)
 
   def start(self):
     self.scheduler.start()
-    cherrypy.quickstart(self)
 
   def stop(self):
     self.scheduler.stop()
+
+  def importPlugins(self):
+    sys.path.append(self.plugin_directory)
+    for python_file in os.listdir(self.plugin_directory):
+      module_name = os.path.splitext(os.path.basename(python_file))[0]
+      try:
+        i = __import__(module_name)
+      except ImportError, e:
+        logging.warn('Error importing module "%s": %s' % (module_name, repr(e)))
+        continue
+      try:
+        exports = i.exports
+      except AttributeError, e:
+        logging.warn('Error importing module "%s": %s' % (module_name, repr(e)))
+        continue
+      for func_name in exports:
+        if hasattr(func_name, '__call__'):
+          # exported function itself
+          func = func_name
+          func_name = func.__name__
+        else:
+          try:
+            func = i.__dict__[func_name]
+          except KeyError, e:
+            logging.warn('Error importing function "%s" from module "%s"' % (module_name, func_name))
+            continue
+        key = '.'.join(module_name, func_name)
+        self.functions[key] = func
 
   def reconfigureTasks(self):
     self.tasks = []
@@ -44,7 +73,3 @@ class Watcher(object):
         
         task = Task(collector_name, c.config['options']['log'], LogParser(c.config['parser']), c.config['vars'], c.config['options']['period'], c.config['options']['deviation'], index_fields)
         self.tasks.append(task)
-  @cherrypy.expose  
-  def index(self):
-    return "Hello!"
-
