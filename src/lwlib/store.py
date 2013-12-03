@@ -25,8 +25,15 @@ class Store(object):
       del(self.indexes['field'])
   
   def clearIndex(self, field):
-    self.indexes[field]['index'] = defaultdict(list)
-    self.indexes[field]['counter'] = Counter()
+    keyparts = field.split('.')
+    if len(keyparts) == 1:
+      self.indexes[field]['index'] = defaultdict(list)
+      self.indexes[field]['counter'] = Counter()
+    elif len(keyparts) == 2:
+      self.indexes[field]['index'] = defaultdict(lambda: defaultdict(list))
+      self.indexes[field]['counter'] = defaultdict(Counter)
+    else:
+      raise NotImplementedError('Complex indexes of three and more fields are not implemented')
   
   def clearIndexes(self):
     for field in self.indexes.keys():
@@ -38,11 +45,21 @@ class Store(object):
       
   def reindex(self, field):
     self.clearIndex(field)
+    keyparts = field.split('.')
     c = 0
-    for record in self.table:
-      self.indexes[field]['index'][record[field]].append(c)
-      self.indexes[field]['counter'][record[field]] += 1
-      c += 1
+    
+    if len(keyparts) == 1:
+      for record in self.table:
+        self.indexes[field]['index'][record[field]].append(c)
+        self.indexes[field]['counter'][record[field]] += 1
+        c += 1
+    else:
+      (first, second) = keyparts
+      for record  in self.table:
+        self.indexes[field]['index'][record[first]][record[second]].append(c)
+        self.indexes[field]['counter'][record[first]][record[second]] += 1
+        c += 1
+        
 
   def clearAll(self):
     self.clearIndexes()
