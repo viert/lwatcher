@@ -5,7 +5,7 @@ import logging
 from store import Store
 
 class Task(object):
-  def __init__(self, collector_name, log, parser, variables, period, dispersion, index_fields):
+  def __init__(self, collector_name, log, parser, variables, period, dispersion, index_fields, after_parse_callbacks):
     self.collector_name = collector_name
     self.parser = parser
     self.log = log
@@ -13,6 +13,7 @@ class Task(object):
     self.period = period
     self.dispersion = dispersion
     self.index_fields = index_fields
+    self.after_parse_callbacks = after_parse_callbacks
     self.doneAt = time.time()
     self.setNextStart()
     self.processing = False
@@ -83,6 +84,14 @@ class Worker(StoppableThread):
       record = task.parser.parseLine(line+'\n')
       if task.parser.successful:
         parsed += 1
+        # after_parse_callbacks
+        for callback in task.after_parse_callbacks:
+          func = callback[0]
+          args = [record] + callback[1:]
+          try:
+            func(*args)
+          except Exception, e:
+            logging.debug('[%s.%s] %s' % (func.__module__, func.__name__, repr(e)))
         store.push(record)
       total += 1
     logging.info('[worker %s] parsed %d of %d lines of %s' % (task.collector_name, parsed, total, task.log))
@@ -106,7 +115,7 @@ class Worker(StoppableThread):
         try:
           result = self.functions[funcname](store)
         except Exception, e:
-          logging.error("Error running function \"%s\": %s" % (funcname, repr(e)))
+          logging.debug("[%s] %s" % (funcname, repr(e)))
           continue
         store.setVar(varname, result)
     

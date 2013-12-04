@@ -15,8 +15,8 @@ class Watcher(object):
     logging.basicConfig(filename=log_filename, level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     self.functions = {}
     self.tables = {}
-    self.reconfigureTasks()
     self.importPlugins()
+    self.reconfigureTasks()
     self.filekeeper = FileKeeper()
     self.scheduler = Scheduler(self.tasks, self.filekeeper, self.tables, self.functions)
 
@@ -65,11 +65,20 @@ class Watcher(object):
       if 'c' in locals():
         collector_name = c.config['options']['name']
         index_fields = []
+        after_parse_callbacks = []
         for directive in c.config['parser']:
           if directive[0] == 'index':
             index_fields.append(directive[1])
+          elif directive[0] == 'afterParse':
+            try:
+              callback = [self.functions[directive[1]]]
+            except KeyError, e:
+              logging.error('No function %s found for afterParse callback in config file %s' % (directive[1], f))
+            callback += directive[2:]
+            after_parse_callbacks.append(callback)
+            
         # empty store
         self.tables[collector_name] = Store(index_fields)
         
-        task = Task(collector_name, c.config['options']['log'], LogParser(c.config['parser']), c.config['vars'], c.config['options']['period'], c.config['options']['deviation'], index_fields)
+        task = Task(collector_name, c.config['options']['log'], LogParser(c.config['parser']), c.config['vars'], c.config['options']['period'], c.config['options']['deviation'], index_fields, after_parse_callbacks)
         self.tasks.append(task)

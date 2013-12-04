@@ -2,7 +2,6 @@
 
 from collections import Counter
 
-
 def CountRPSbyVhost(store):
   "needs @vhost field indexed"
   return store.indexes['vhost']['counter']
