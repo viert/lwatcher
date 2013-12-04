@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from optparse import OptionParser
-from lwlib.configreader import ConfigReader
+from lwlib.yamlreader import ConfigReader
 from lwlib.parser import LogParser
 import sys
 
