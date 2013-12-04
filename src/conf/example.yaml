@@ -1,0 +1,25 @@
+%YAML 1.2
+---
+config:
+  name: example
+  log: /var/log/syslog
+  period: 300
+parser:
+  directives:
+  - skipTo: [' ']
+  - skip: [' ']
+  - skipTo: [' ']
+  - skip: [' ']
+  - upTo: [' ', 'time']
+  - skip: [' ']
+  - upTo: [' ', 'host']
+  - skip: [' ']
+  - upTo: [':', 'from']
+  - skip: [':']
+  - skip: [' ']
+  - upTo: ['\n', 'message']
+  - skip: ['\n']
+  - index: 'time'
+  - index: 'from'
+
+  

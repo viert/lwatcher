@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from configreader import ConfigReader
+from yamlreader import ConfigReader
 from tasks import Task, Scheduler
 from parser import LogParser
 from store import Store

@@ -1,0 +1,44 @@
+%YAML 1.2
+---
+config:
+  name: lighttpd
+  log: lighttpd.access.log
+  period: 300
+parser:
+  directives:
+  - skip: ['[']
+  - upTo: [']', 'datetime']
+  - skip: [']']
+  - skip: [' ']
+  - upTo: [' ', 'vhost']
+  - skip: [' ']
+  - upTo: [' ', 'ip']
+  - skip: [' ']
+  - skip: ['"']
+  - upTo: [' ', 'method']
+  - skip: [' ']
+  - upTo: [' ', 'url']
+  - skip: [' ']
+  - skipTo: [' ']
+  - skip: [' ']
+  - upTo: [' ', 'status']
+  - skip: [' ']
+  - skip: ['"']
+  - skipTo: ['"']
+  - skip: ['"']
+  - skip: [' ']
+  - skip: ['"']
+  - upTo: ['"', 'useragent']
+  - skip: ['"']
+  - skip: [' ']
+  - skip: ['"']
+  - upTo: ['"', 'cookies']
+  - skip: ['"']
+  - skip: [' ']
+  - upTo: ['\n', 'time']
+  - skip: ['\n']
+  - index: 'vhost'
+  - index: 'status.vhost'
+vars:
+  rps: accesslog.CountRPSbyVhost
+  m500: accesslog.Count500byVhost
