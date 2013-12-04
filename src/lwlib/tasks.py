@@ -80,7 +80,7 @@ class Worker(StoppableThread):
     total = 0
     parsed = 0
     for line in data.split('\n'):
-      record = task.parser.parseLine(line)
+      record = task.parser.parseLine(line+'\n')
       if task.parser.successful:
         parsed += 1
         store.push(record)
@@ -104,7 +104,7 @@ class Worker(StoppableThread):
         continue
       else:
         try:
-          result = self.functions[funcname]()
+          result = self.functions[funcname](store)
         except Exception, e:
           logging.error("Error running function \"%s\": %s" % (funcname, repr(e)))
           continue
