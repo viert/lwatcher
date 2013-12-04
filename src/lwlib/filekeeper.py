@@ -12,7 +12,6 @@ class FileKeeper(object):
     if filename in self.filestore.keys():
       (stat, f) = self.filestore[filename]
       
-      
       # At this point nothing could happen with already opened file even if someone deleted it.
       # Read it to the end
       data = f.read()
@@ -47,6 +46,8 @@ class FileKeeper(object):
         # if file doesn't exist just do nothing, hoping the file to appear next time
         return ''
       # first time access doesn't contain any data, next time we'll read it from this very place
-      f.seek(stat.st_size-1)
+#       temporarily enable first time reading      
+#      f.seek(stat.st_size-1)
+      data = f.read()
       self.filestore[filename] = (stat, f)
-      return ''
+      return data

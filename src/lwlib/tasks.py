@@ -36,7 +36,7 @@ class Task(object):
     return 
   
   def __repr__(self):
-    return "<Task collector_name=%s log=%s processing=%s doneAt=%.2f nextStart=%.2f>" % (self.collector_name, self.log, self.processing, self.doneAt, self.nextStart)
+    return "[Task collector_name=%s log=%s processing=%s doneAt=%.2f nextStart=%.2f]" % (self.collector_name, self.log, self.processing, self.doneAt, self.nextStart)
   
   
   def isReady(self):
@@ -55,10 +55,11 @@ class StoppableThread(threading.Thread):
 
   
 class Worker(StoppableThread):
-  def __init__(self, queue, filekeeper, metastore, thread_id):
+  def __init__(self, queue, filekeeper, metastore, functions, thread_id):
     StoppableThread.__init__(self)
     self.metastore = metastore
     self.filekeeper = filekeeper
+    self.functions = functions
     self.thread_id = thread_id
     self.queue = queue
     self.performing_task = None
@@ -86,6 +87,28 @@ class Worker(StoppableThread):
       total += 1
     logging.info('[worker %s] parsed %d of %d lines of %s' % (task.collector_name, parsed, total, task.log))
     store.reindexAll()
+    
+    self.state = 'calculating functions for log %s' % task.log
+    for var in task.variables.keys():
+      
+      varname, funcname = var, task.variables[var][0]
+
+      # TODO args
+      if len(task.variables[var]) > 1:
+        args = task.variables[var][1:]
+      else:
+        args = []
+      
+      if not funcname in self.functions.keys():
+        logging.error("No function \"%s\" found in registered plugins" % funcname)
+        continue
+      else:
+        try:
+          result = self.functions[funcname]()
+        except Exception, e:
+          logging.error("Error running function \"%s\": %s" % (funcname, repr(e)))
+          continue
+        store.setVar(varname, result)
     
     # Storing data to Watcher tables
     self.metastore[task.collector_name] = store
@@ -116,7 +139,7 @@ class Worker(StoppableThread):
   
   
 class Scheduler(StoppableThread):
-  def __init__(self, tasks, filekeeper, metastore, numThreads=10):
+  def __init__(self, tasks, filekeeper, metastore, functions, numThreads=10):
     StoppableThread.__init__(self)
     self._stopped = False
     self.filekeeper = filekeeper
@@ -124,7 +147,7 @@ class Scheduler(StoppableThread):
     self.queue = Queue.Queue()
     self.pool = []
     for i in xrange(numThreads):
-      worker = Worker(self.queue, self.filekeeper, metastore, i+1)
+      worker = Worker(self.queue, self.filekeeper, metastore, functions, i+1)
       self.pool.append(worker)
   
   def stop(self):

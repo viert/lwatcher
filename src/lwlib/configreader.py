@@ -4,8 +4,6 @@ from pyparsing import *
 
 class ConfigReader(object):
     
-  AVAILABLE_FUNCTIONS = ['max', 'maxCount']
-  
   EOL = Suppress("\n" ^ LineEnd())
   
   COMMENT = Suppress("#" + SkipTo(EOL))
@@ -13,7 +11,7 @@ class ConfigReader(object):
   QUOTED_ARGUMENT_LIST = delimitedList(QUOTED_STRING)
   ARGUMENT_LIST = delimitedList(QUOTED_STRING ^ Word(alphanums))
   BRACED_QUOTED_ARGUMENT_LIST = Suppress("(") + QUOTED_ARGUMENT_LIST + Suppress(")")
-  BRACED_ARGUMENT_LIST = Suppress("(") + ARGUMENT_LIST + Suppress(")")
+  BRACED_ARGUMENT_LIST = Suppress("(") + Optional(ARGUMENT_LIST) + Suppress(")")
   
   DIRECTIVE_NAME = (Keyword("skip") ^ Keyword("skipTo") ^ Keyword("upTo") ^ Keyword("fromTo") ^ Keyword("index"))
   DIRECTIVE = (DIRECTIVE_NAME + BRACED_QUOTED_ARGUMENT_LIST + Optional(COMMENT)).setResultsName('directives', listAllMatches=True)
@@ -25,11 +23,11 @@ class ConfigReader(object):
   CONFIG_DECLARATION = (Suppress(Keyword("[config]")) + OPTION_LIST + Suppress(Keyword("[/config]"))).setResultsName('config')
   
   VARIABLE_NAME = (Word(alphanums))
-  FUNCTION_NAME = (Or([Keyword(x) for x in AVAILABLE_FUNCTIONS]))
+  FUNCTION_NAME = (Word(alphanums + '.'))
   FUNCTION = (FUNCTION_NAME + BRACED_ARGUMENT_LIST)
   VARIABLE_DECLARATION = (VARIABLE_NAME + Suppress('=') + FUNCTION).setResultsName('vars', listAllMatches=True)
   VARIABLE_DECLARATION_LIST = OneOrMore(VARIABLE_DECLARATION ^ COMMENT)
-  VARS_DECLARATION = (Suppress(Keyword("[vars]")) + VARIABLE_DECLARATION_LIST + Suppress(Keyword("[/vars]"))).setResultsName('varsSection')
+  VARS_DECLARATION = (Suppress(Keyword("[vars]")) + Optional(VARIABLE_DECLARATION_LIST) + Suppress(Keyword("[/vars]"))).setResultsName('varsSection')
   
   SECTION_LIST = CONFIG_DECLARATION & PARSER_DECLARATION & VARS_DECLARATION ^ COMMENT
   COLLECTOR_DECLARATION = (Suppress(Keyword("[collector]")) + SECTION_LIST + Suppress(Keyword("[/collector]"))).setResultsName('collector')
@@ -71,6 +69,8 @@ class ConfigReader(object):
 # testing
 if __name__ == '__main__':
   cr = ConfigReader("../conf/example.conf")
+  print repr(cr.config)
+  cr = ConfigReader("../conf/lighttpd.conf")
   print repr(cr.config)
     
     

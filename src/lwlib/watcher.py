@@ -18,7 +18,7 @@ class Watcher(object):
     self.reconfigureTasks()
     self.importPlugins()
     self.filekeeper = FileKeeper()
-    self.scheduler = Scheduler(self.tasks, self.filekeeper, self.tables)
+    self.scheduler = Scheduler(self.tasks, self.filekeeper, self.tables, self.functions)
 
   def start(self):
     self.scheduler.start()

@@ -6,8 +6,12 @@ class Store(object):
   def __init__(self, index_fields=[]):
     self.table = []
     self.indexes = {}
+    self.vars = {}
     for field in index_fields:
       self.addIndex(field)
+
+  def setVar(self, var_name, obj):
+    self.vars[var_name] = obj
 
   def fields(self):
     if len(self.table) == 0:
