@@ -32,6 +32,7 @@ class Store(object):
     keyparts = field.split('.')
     if len(keyparts) == 1:
       self.indexes[field]['index'] = defaultdict(list)
+      self.indexes[field]['sortedkeys'] = []
       self.indexes[field]['counter'] = Counter()
     elif len(keyparts) == 2:
       self.indexes[field]['index'] = defaultdict(lambda: defaultdict(list))
@@ -57,13 +58,14 @@ class Store(object):
         self.indexes[field]['index'][record[field]].append(c)
         self.indexes[field]['counter'][record[field]] += 1
         c += 1
+      self.indexes[field]['sortedkeys'] = self.indexes[field]['index'].keys()
+      self.indexes[field]['sortedkeys'].sort()
     else:
       (first, second) = keyparts
       for record  in self.table:
         self.indexes[field]['index'][record[first]][record[second]].append(c)
         self.indexes[field]['counter'][record[first]][record[second]] += 1
         c += 1
-        
 
   def clearAll(self):
     self.clearIndexes()
@@ -71,5 +73,3 @@ class Store(object):
 
   def push(self, record):
     self.table.append(record)
-    
-  
