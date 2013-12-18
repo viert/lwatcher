@@ -6,6 +6,7 @@ from flask import Flask, make_response, request
 from ConfigParser import ConfigParser
 import json
 import sys
+import datetime
 
 CONFIG_DIR = '/etc/lwatcher'
 CONFIG_FILE = CONFIG_DIR + '/lwatcher.conf'
@@ -27,8 +28,8 @@ except Exception, e:
 logfile     = cp.get('main', 'log_file')
 plugin_dir  = cp.get('main', 'plugin_dir')
 bind_host   = cp.get('main', 'bind_host')
-bind_port   = cp.get('main', 'bind_port')
-threads     = cp.get('main', 'threads')
+bind_port   = cp.getint('main', 'bind_port')
+threads     = cp.getint('main', 'threads')
 pidfile     = cp.get('main', 'pid_file')
 
 watcher = Watcher(COLLECTOR_CONFIG_DIR, logfile, plugin_dir, threads)
@@ -40,6 +41,12 @@ def __startApplication():
   
 def startApplicationAsDaemon():
   startDaemon(__startApplication, pidfile)
+
+def jsonFixer(obj):
+  if isinstance(obj, datetime.datetime):
+    return obj.isoformat()
+  else:
+    return obj
 
 @app.route('/')
 def index():
@@ -83,13 +90,13 @@ def data(table_name=None, var_name=None):
 
   if var_name is None:
     result = { 'total' : len(watcher.tables[table_name].table), 'data' : watcher.tables[table_name].table }
-    resp = make_response(json.dumps(result), 200)
+    resp = make_response(json.dumps(result, default=jsonFixer), 200)
     resp.headers['Content-Type'] = 'application/json'
     return resp
   else:
     if not var_name in watcher.tables[table_name].vars.keys():
       return make_response("Variable not found", 404)
     else:
-      resp = make_response(json.dumps(watcher.tables[table_name].vars[var_name]), 200)
+      resp = make_response(json.dumps(watcher.tables[table_name].vars[var_name], default=jsonFixer), 200)
       resp.headers['Content-Type'] = 'application/json'
       return resp
