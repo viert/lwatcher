@@ -57,6 +57,8 @@ class Watcher(object):
   def reconfigureTasks(self):
     self.tasks = []
     for f in os.listdir(self.config_directory):
+      if os.path.isdir(self.config_directory + '/' + f):
+        continue
       try:
         c = ConfigReader(self.config_directory + "/" + f)
       except Exception as e:

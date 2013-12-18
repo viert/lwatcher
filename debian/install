@@ -1,6 +1,6 @@
 src/lwatcher/lwlib/*.py         usr/share/pyshared/lwatcher/lwlib
 src/lwatcher/www/*.py           usr/share/pyshared/lwatcher/www
-src/conf/*                      etc/lwatcher/
+src/conf/*                      etc/lwatcher/examples
 src/inparse.py                  usr/sbin/
 src/lwatcher                    usr/sbin/
 src/plugins/*                   usr/lib/lwatcher/plugins/

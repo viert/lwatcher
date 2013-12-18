@@ -6,10 +6,11 @@ import json
 import sys
 
 CONFIG_DIR = '/etc/lwatcher'
+COLLECTOR_CONFIG_DIR = '/etc/lwatcher/collectors'
 PLUGINS_DIR = '/usr/lib/lwatcher/plugins'
 LOG_FILE = '/var/log/lwatcher/lwatcher.log'
 
-watcher = Watcher(CONFIG_DIR, LOG_FILE, PLUGINS_DIR)
+watcher = Watcher(COLLECTOR_CONFIG_DIR, LOG_FILE, PLUGINS_DIR)
 app = Flask('WatcherApplication')
 
 def startApplication():
