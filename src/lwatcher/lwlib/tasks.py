@@ -2,6 +2,7 @@
 
 import random, time, threading, Queue
 import logging
+import datetime
 from store import Store
 
 class Task(object):
@@ -37,7 +38,9 @@ class Task(object):
     return 
   
   def __repr__(self):
-    return "[Task collector_name=%s log=%s processing=%s doneAt=%.2f nextStart=%.2f]" % (self.collector_name, self.log, self.processing, self.doneAt, self.nextStart)
+    doneAt = datetime.datetime.fromtimestamp(self.doneAt).strftime('%H:%M:%S')
+    nextStart = datetime.datetime.fromtimestamp(self.nextStart).strftime('%H:%M:%S')
+    return "[Task collector_name=%s log=%s processing=%s doneAt=%s nextStart=%s]" % (self.collector_name, self.log, self.processing, doneAt, nextStart)
   
   
   def isReady(self):
