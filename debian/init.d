@@ -15,8 +15,8 @@
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC=lwatch               # Introduce a short description here
-NAME=lwatch               # Introduce the short server's name here
+DESC=logwatch               # Introduce a short description here
+NAME=logwatch               # Introduce the short server's name here
 DAEMON=/usr/sbin/lwatch   # Introduce the server's location here
 DAEMON_ARGS=""             # Arguments to run the daemon with
 PIDFILE=/var/run/$NAME.pid
