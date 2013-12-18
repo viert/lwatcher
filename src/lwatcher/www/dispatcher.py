@@ -38,7 +38,7 @@ def index():
   for key in watcher.functions.keys():
     doc = watcher.functions[key].__doc__
     result += key
-    if len(doc) > 0:
+    if doc and len(doc) > 0:
       result += "\n"
       for line in doc.split("\n"):
         result += "    " + line + "\n"
