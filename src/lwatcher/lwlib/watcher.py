@@ -9,16 +9,17 @@ import os, logging, sys
 
 class Watcher(object):
 
-  def __init__(self, config_directory, log_filename, plugin_directory):
+  def __init__(self, config_directory, log_filename, plugin_directory, threads):
     self.config_directory = config_directory
     self.plugin_directory = plugin_directory
+    self.threads = threads
     logging.basicConfig(filename=log_filename, level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     self.functions = {}
     self.tables = {}
     self.importPlugins()
     self.reconfigureTasks()
     self.filekeeper = FileKeeper()
-    self.scheduler = Scheduler(self.tasks, self.filekeeper, self.tables, self.functions)
+    self.scheduler = Scheduler(self.tasks, self.filekeeper, self.tables, self.functions, self.threads)
 
   def start(self):
     self.scheduler.start()

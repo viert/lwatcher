@@ -17,7 +17,7 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC=logwatch               # Introduce a short description here
 NAME=logwatch               # Introduce the short server's name here
-DAEMON=/usr/sbin/lwatch   # Introduce the server's location here
+DAEMON=/usr/sbin/logwatch   # Introduce the server's location here
 DAEMON_ARGS=""             # Arguments to run the daemon with
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME

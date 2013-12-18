@@ -1,4 +1,3 @@
 #!/usr/bin/env python
-from lwatcher.www.dispatcher import startApplication
-
-startApplication()
+from lwatcher.www.dispatcher import startApplicationAsDaemon
+startApplicationAsDaemon()
