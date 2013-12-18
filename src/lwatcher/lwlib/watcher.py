@@ -76,6 +76,7 @@ class Watcher(object):
               callback = [self.functions[directive[1]]]
             except KeyError, e:
               logging.error('No function %s found for afterParse callback in config file %s' % (directive[1], f))
+              continue
             callback += directive[2:]
             after_parse_callbacks.append(callback)
             

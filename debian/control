@@ -8,5 +8,5 @@ Homepage: http://github.com/viert/lwatcher.git
 
 Package: lwatcher
 Architecture: all
-Depends: python, python-tokenparser, python-yaml, python-flask
+Depends: python, python-tokenparser, python-yaml, python-flask, python-dateutil
 Description: LWatcher is a logwatcher daemon who parses portions of logs eventually, do maths with the data and keeps the results until next portion's arrived
