@@ -1,10 +1,22 @@
 #!/usr/bin/env python
 
 from collections import Counter
+import datetime
 
 def CountRPSbyVhost(store):
-  "needs @vhost field indexed"
-  return store.indexes['vhost']['counter']
+  "needs @vhost and @datetime field indexed"
+  dtkeys = store.indexes['datetime']['sortedkeys']
+  if not dtkeys:
+    return None
+  tmin = dtkeys[0]
+  tmax = dtkeys[len(dtkeys)-1]
+  tdelta = (tmax - tmin).seconds
+  
+  rps = {}
+  for k, v in store.indexes['vhost']['counter'].items():
+    rps[k] = int(v / tdelta)
+  
+  return rps
 
 def Count500byVhost(store):
   "needs @status:@vhost index"
