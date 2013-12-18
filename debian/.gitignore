@@ -1,0 +1,5 @@
+lwatcher
+*.log
+*.debhelper
+*.substvars
+files

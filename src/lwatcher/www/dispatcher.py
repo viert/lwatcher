@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
-from lwlib import Watcher
+from lwatcher.lwlib import Watcher
 from flask import Flask, make_response, request
 import json
 import sys
 
-watcher = Watcher('./conf', 'testwatcher.log', './plugins')
+CONFIG_DIR = '/etc/lwatcher'
+PLUGINS_DIR = '/usr/lib/lwatcher/plugins'
+LOG_FILE = '/var/log/lwatcher/lwatcher.log'
+
+watcher = Watcher(CONFIG_DIR, LOG_FILE, PLUGINS_DIR)
 app = Flask('WatcherApplication')
 
 def startApplication():

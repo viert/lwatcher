@@ -1,1 +1,4 @@
 #!/usr/bin/env python
+from lwatcher.www.dispatcher import startApplication
+
+startApplication()

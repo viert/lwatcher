@@ -1,5 +1,4 @@
-src/lwlib/*           usr/share/pyshared/lwatcher/lwlib/
-src/www/*             usr/share/pyshared/lwatcher/www/
+src/lwatcher/*        usr/share/pyshared/lwatcher/
 src/conf/*            etc/lwatcher/
 src/inparse.py        usr/sbin/
 src/lwatcher          usr/sbin/

@@ -1,15 +1,12 @@
 Source: lwatcher
-Section: unknown
+Section: admin
 Priority: extra
 Maintainer: Pavel Vorobyov <viert@yandex-team.ru>
 Build-Depends: debhelper (>= 8.0.0)
 Standards-Version: 3.9.4
-Homepage: <insert the upstream URL, if relevant>
-#Vcs-Git: git://git.debian.org/collab-maint/lwatcher.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/lwatcher.git;a=summary
+Homepage: http://github.com/viert/lwatcher.git
 
 Package: lwatcher
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Depends: python, python-tokenparser, python-yaml, python-flask
+Description: LWatcher is a logwatcher daemon who parses portions of logs eventually, do maths with the data and keeps the results until next portion's arrived
