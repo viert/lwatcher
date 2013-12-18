@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 from optparse import OptionParser
-from lwlib.yamlreader import ConfigReader
-from lwlib.parser import LogParser
+from lwatcher.lwlib.yamlreader import ConfigReader
+from lwatcher.lwlib.parser import LogParser
 import sys
 
 op = OptionParser()
