@@ -14,8 +14,9 @@ def CountRPSbyVhost(store):
   
   rps = {}
   for k, v in store.indexes['vhost']['counter'].items():
-    rps[k] = int(v / tdelta)
+    rps[k] = float(v) / tdelta
   
+  rps['_total'] = sum(rps.values())
   return rps
 
 def Count500byVhost(store):
