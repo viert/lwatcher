@@ -34,6 +34,7 @@ class FileKeeper(object):
           return data
         # Reading the new file to the end
         data += f.read()
+        self.filestore[filename] = (new_stat, f)
       
       return data
       
