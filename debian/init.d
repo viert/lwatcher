@@ -43,7 +43,7 @@ get_pid() {
   if [ -e $PIDFILE ]; then
     pid=`cat $PIDFILE`
   else
-    pid=`ps ax | grep lwatcher | grep -v grep | awk '{ print $1 }'`
+    pid=`ps ax | grep $DAEMON | grep -v grep | awk '{ print $1 }'`
   fi
 }
 
