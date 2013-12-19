@@ -59,7 +59,7 @@ do_start()
   sleep 0.1
   
   get_pid
-  if [ "x$pid" != "x" ]; then
+  if [ "x$pid" == "x" ]; then
     echo $DAEMON failed to start
     return 2
   fi
