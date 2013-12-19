@@ -41,6 +41,7 @@ def __startApplication():
 def startApplicationAsDaemon():
   sys.stdout = open('%s/stdout.log' % logdir, "a")
   sys.stderr = open('%s/stderr.log' % logdir, "a")
+  sys.stdin.close()
   startDaemon(__startApplication, pidfile)
 
 def jsonFixer(obj):
