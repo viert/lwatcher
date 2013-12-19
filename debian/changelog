@@ -1,3 +1,9 @@
+lwatcher (0.1-6) unstable; urgency=low
+
+  * fucking initscript!
+
+ -- Pavel Vorobyov <viert@yandex-team.ru>  Thu, 19 Dec 2013 13:18:46 +0400
+
 lwatcher (0.1-5) unstable; urgency=low
 
   * init fixed again
