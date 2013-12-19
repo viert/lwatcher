@@ -1,8 +1,8 @@
-src/lwatcher/lwlib/*.py         usr/share/pyshared/lwatcher/lwlib
-src/lwatcher/www/*.py           usr/share/pyshared/lwatcher/www
-src/lwatcher/*.py               usr/share/pyshared/lwatcher
-src/conf/*.yaml                 etc/lwatcher/collectors/examples
-src/conf/lwatcher.conf          etc/lwatcher
-src/inparse.py                  usr/sbin/
-src/logwatch                    usr/sbin/
-src/plugins/*                   usr/lib/lwatcher/plugins/
+src/lib/lwatcher/lwlib/*.py         usr/share/pyshared/lwatcher/lwlib
+src/lib/lwatcher/www/*.py           usr/share/pyshared/lwatcher/www
+src/lib/lwatcher/*.py               usr/share/pyshared/lwatcher
+src/conf/*.yaml                     etc/lwatcher/collectors/examples
+src/conf/lwatcher.conf              etc/lwatcher
+src/inparse.py                      usr/sbin/
+src/lwatcher                        usr/sbin/
+src/plugins/*                       usr/lib/lwatcher/plugins/

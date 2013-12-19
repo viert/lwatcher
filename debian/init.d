@@ -15,10 +15,10 @@
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC=logwatch               # Introduce a short description here
-NAME=logwatch               # Introduce the short server's name here
-DAEMON=/usr/sbin/logwatch   # Introduce the server's location here
-DAEMON_ARGS=""             # Arguments to run the daemon with
+DESC=lwatcher               # Introduce a short description here
+NAME=lwatcher               # Introduce the short server's name here
+DAEMON=/usr/sbin/lwatcher   # Introduce the server's location here
+DAEMON_ARGS=""              # Arguments to run the daemon with
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
@@ -52,10 +52,10 @@ do_start()
 	# The above code will not work for interpreted scripts, use the next
 	# six lines below instead (Ref: #643337, start-stop-daemon(8) )
 	start-stop-daemon --start --quiet --pidfile $PIDFILE --startas $DAEMON \
-		--name $NAME --test > /dev/null \
+		--name $NAME --exec $DAEMON --test > /dev/null \
 		|| return 1
 	start-stop-daemon --start --quiet --pidfile $PIDFILE --startas $DAEMON \
-		--name $NAME -- $DAEMON_ARGS \
+		--name $NAME --exec $DAEMON -- $DAEMON_ARGS \
 		|| return 2
 
 	# Add code here, if necessary, that waits for the process to be ready
