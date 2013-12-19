@@ -56,11 +56,16 @@ do_start()
   fi
   
   $DAEMON
+  sleep 0.1
+  
   get_pid
   if [ "x$pid" != "x" ]; then
     echo $DAEMON failed to start
     return 2
   fi
+  
+  echo $DAEMON started.
+  return 0
 }
 
 #
@@ -75,6 +80,8 @@ do_stop()
   fi
   
   kill $pid
+  sleep 0.1
+  
   get_pid
   if [ "x$pid" != "x" ]; then
     echo $DAEMON failed to stop
