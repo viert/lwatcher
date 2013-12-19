@@ -1,3 +1,9 @@
+lwatcher (0.1-2) unstable; urgency=low
+
+  * Redirecting stdout and stderr to logs
+
+ -- Pavel Vorobyov <viert@yandex-team.ru>  Thu, 19 Dec 2013 12:33:21 +0400
+
 lwatcher (0.1-1) unstable; urgency=low
 
   * Initial release
