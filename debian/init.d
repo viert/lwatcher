@@ -38,29 +38,29 @@ SCRIPTNAME=/etc/init.d/$NAME
 #
 # Function that starts the daemon/service
 #
+
+get_pid() {
+  if [ -e $PIDFILE ]; then
+    pid=`cat $PIDFILE`
+  else
+    pid=`ps ax | grep lwatcher | grep -v grep | awk '{ print $1 }'`
+  fi
+}
+
 do_start()
 {
-	# Return
-	#   0 if daemon has been started
-	#   1 if daemon was already running
-	#   2 if daemon could not be started
-  # start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
-  #	|| return 1
-  # start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON -- \
-  #	$DAEMON_ARGS \
-  #	|| return 2
-	# The above code will not work for interpreted scripts, use the next
-	# six lines below instead (Ref: #643337, start-stop-daemon(8) )
-	start-stop-daemon --start --quiet --pidfile $PIDFILE --startas $DAEMON \
-		--name $NAME --exec $DAEMON --test > /dev/null \
-		|| return 1
-	start-stop-daemon --start --quiet --pidfile $PIDFILE --startas $DAEMON \
-		--name $NAME --exec $DAEMON -- $DAEMON_ARGS \
-		|| return 2
-
-	# Add code here, if necessary, that waits for the process to be ready
-	# to handle requests from services started subsequently which depend
-	# on this one.  As a last resort, sleep for some time.
+  get_pid  
+  if [ "x$pid" != "x" ]; then
+    echo $DAEMON is already running
+    return 1
+  fi
+  
+  $DAEMON
+  get_pid
+  if [ "x$pid" != "x" ]; then
+    echo $DAEMON failed to start
+    return 2
+  fi
 }
 
 #
@@ -68,37 +68,28 @@ do_start()
 #
 do_stop()
 {
-	# Return
-	#   0 if daemon has been stopped
-	#   1 if daemon was already stopped
-	#   2 if daemon could not be stopped
-	#   other if a failure occurred
-	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
-	RETVAL="$?"
-	[ "$RETVAL" = 2 ] && return 2
-	# Wait for children to finish too if this is a daemon that forks
-	# and if the daemon is only ever run from this initscript.
-	# If the above conditions are not satisfied then add some other code
-	# that waits for the process to drop all resources that could be
-	# needed by services started subsequently.  A last resort is to
-	# sleep for some time.
-	start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
-	[ "$?" = 2 ] && return 2
-	# Many daemons don't delete their pidfiles when they exit.
+  get_pid
+  if [ "x$pid" == "x" ]; then
+    echo $DAEMON is already stopped
+    return 1
+  fi
+  
+  kill $pid
+  get_pid
+  if [ "x$pid" != "x" ]; then
+    echo $DAEMON failed to stop
+    return 2
+  fi
+  
+  echo $DAEMON stopped
 	rm -f $PIDFILE
-	return "$RETVAL"
+  return 0
 }
 
 #
 # Function that sends a SIGHUP to the daemon/service
 #
 do_reload() {
-	#
-	# If the daemon can reload its configuration without
-	# restarting (for example, when it is sent a SIGHUP),
-	# then implement that here.
-	#
-	start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE --name $NAME
 	return 0
 }
 
@@ -120,17 +111,9 @@ case "$1" in
 	esac
 	;;
   status)
-       status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
-       ;;
-  #reload|force-reload)
-	#
-	# If do_reload() is not implemented then leave this commented out
-	# and leave 'force-reload' as an alias for 'restart'.
-	#
-	#log_daemon_msg "Reloading $DESC" "$NAME"
-	#do_reload
-	#log_end_msg $?
-	#;;
+    echo $DAEMON status is not implemented in initscript
+      
+  ;;
   restart|force-reload)
 	#
 	# If the "reload" option is implemented then remove the
@@ -155,7 +138,7 @@ case "$1" in
 	;;
   *)
 	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
-	echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload}" >&2
 	exit 3
 	;;
 esac
