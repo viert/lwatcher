@@ -9,7 +9,7 @@ def CountRPSbyVhost(store):
   if not dtkeys:
     return None
   tmin = dtkeys[0]
-  tmax = dtkeys[-1:]
+  tmax = dtkeys[len(dtkeys)-1]
   tdelta = (tmax - tmin).seconds
   
   rps = {}
