@@ -1,3 +1,9 @@
+lwatcher (0.1-7) unstable; urgency=low
+
+  * debug logger
+
+ -- Pavel Vorobyov <viert@yandex-team.ru>  Tue, 24 Dec 2013 13:18:52 +0400
+
 lwatcher (0.1-6) unstable; urgency=low
 
   * fucking initscript!
