@@ -9,11 +9,11 @@ import os, logging, sys
 
 class Watcher(object):
 
-  def __init__(self, config_directory, log_filename, plugin_directory, threads):
+  def __init__(self, config_directory, log_filename, plugin_directory, threads, loglevel):
     self.config_directory = config_directory
     self.plugin_directory = plugin_directory
     self.threads = threads
-    logging.basicConfig(filename=log_filename, level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(filename=log_filename, level=loglevel, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     self.functions = {}
     self.tables = {}
     self.importPlugins()

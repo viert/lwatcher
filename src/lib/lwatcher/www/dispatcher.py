@@ -4,19 +4,20 @@ from lwatcher.lwlib import Watcher
 from lwatcher.daemontools import *
 from flask import Flask, make_response, request
 from ConfigParser import ConfigParser
-import json, sys, datetime
+import json, sys, datetime, logging
 
 CONFIG_DIR = '/etc/lwatcher'
 CONFIG_FILE = CONFIG_DIR + '/lwatcher.conf'
 COLLECTOR_CONFIG_DIR = '/etc/lwatcher/collectors'
 PLUGINS_DIR = '/usr/lib/lwatcher/plugins'
 LOG_FILE = '/var/log/lwatcher/lwatcher.log'
+LOG_LEVEL = 'DEBUG'
 PID_FILE = '/var/run/lwatcher.pid'
 BIND_HOST = '127.0.0.1'
 BIND_PORT = 5000
 THREADS_NUM = 10
 
-cp = ConfigParser({ 'pid_file' : PID_FILE, 'log_file' : LOG_FILE, 'threads' : THREADS_NUM, 'bind_host' : BIND_HOST, 'bind_port' : BIND_PORT, 'plugin_dir' : PLUGINS_DIR })
+cp = ConfigParser({ 'pid_file' : PID_FILE, 'log_file' : LOG_FILE, 'threads' : THREADS_NUM, 'bind_host' : BIND_HOST, 'bind_port' : BIND_PORT, 'plugin_dir' : PLUGINS_DIR, 'log_level' : LOG_LEVEL })
 try:
   cp.readfp(open(CONFIG_FILE))
 except Exception, e:
@@ -30,8 +31,12 @@ bind_port   = cp.getint('main', 'bind_port')
 threads     = cp.getint('main', 'threads')
 pidfile     = cp.get('main', 'pid_file')
 logdir      = os.path.dirname(logfile)
+try:
+  loglevel    = logging.__getattribute__(cp.get('main', 'log_level').upper())
+except AttributeError:
+  loglevel    = logging.__getattribute__(LOG_LEVEL)
 
-watcher = Watcher(COLLECTOR_CONFIG_DIR, logfile, plugin_dir, threads)
+watcher = Watcher(COLLECTOR_CONFIG_DIR, logfile, plugin_dir, threads, loglevel)
 app = Flask('WatcherApplication')
 
 def __startApplication():
