@@ -106,7 +106,7 @@ class Worker(StoppableThread):
     
     
     self.state = 'calculating functions for log %s' % task.log
-    for var in task.variables.keys():
+    for var in task.variables:
       
       varname, funcname = var, task.variables[var][0]
 
@@ -121,7 +121,7 @@ class Worker(StoppableThread):
         continue
       else:
         try:
-          result = self.functions[funcname](store)
+          result = self.functions[funcname](store, *args)
         except Exception, e:
           logging.debug("[%s] %s" % (funcname, repr(e)))
           continue

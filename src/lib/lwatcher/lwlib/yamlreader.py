@@ -35,8 +35,8 @@ class ConfigReader(object):
       directive += args
       self.config['parser'].append(directive)
     
-    if 'vars' in raw.keys():  
-      for varname in raw['vars'].keys():
+    if 'vars' in raw:  
+      for varname in raw['vars']:
         raw_var = raw['vars'][varname]
         if type(raw_var) == str:
           raw_var = [raw_var]
