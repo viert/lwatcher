@@ -26,7 +26,7 @@ def convertToInt(record, key, default=None, base=10):
       record[key] = default
 
 # backward compatibility function
-def convertDate(*args):
-  return convertToDatetime(args)
+def convertDate(record, key, format=None):
+  return convertToDatetime(record, key, format)
 
 exports = [convertDate, convertToFloat, convertToInt, convertToDatetime]
