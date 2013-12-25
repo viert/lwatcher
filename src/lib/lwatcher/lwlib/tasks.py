@@ -83,6 +83,7 @@ class Worker(StoppableThread):
     self.state = 'parsing data from log %s' % task.log
     total = 0
     parsed = 0
+    t1 = time.time()
     for line in data.split('\n'):
       record = task.parser.parseLine(line+'\n')
       if task.parser.successful:
@@ -97,8 +98,12 @@ class Worker(StoppableThread):
             logging.debug('[%s.%s] %s' % (func.__module__, func.__name__, repr(e)))
         store.push(record)
       total += 1
-    logging.info('[worker %s] parsed %d of %d lines of %s' % (task.collector_name, parsed, total, task.log))
+    t2 = time.time()
+    logging.info('[worker %s] parsed %d of %d lines of %s in %.02f seconds' % (task.collector_name, parsed, total, task.log, t2-t1))
     store.reindexAll()
+    t3 = time.time()
+    logging.info('[worker %s] indexes built in %.02f seconds' % (task.collector_name, t3-t2))
+    
     
     self.state = 'calculating functions for log %s' % task.log
     for var in task.variables.keys():
@@ -121,12 +126,14 @@ class Worker(StoppableThread):
           logging.debug("[%s] %s" % (funcname, repr(e)))
           continue
         store.setVar(varname, result)
+    t4 = time.time()
+    logging.info('[worker %s] functions calculated in %.02f seconds' % (task.collector_name, t4-t3))
     
     # Storing data to Watcher tables
     self.metastore[task.collector_name] = store
     
-    # TODO variables
-    
+    logging.info('[worker %s] task done in %.02f seconds' % (task.collector_name, t4-t1))
+
     self.performing_task = None
     task.setDone()
   
