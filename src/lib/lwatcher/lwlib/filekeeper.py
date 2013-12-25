@@ -28,8 +28,8 @@ class FileKeeper(object):
         # Maybe someone is still writing file in (deleted) state, giving up
         return data
       
-      if new_stat.st_ino != stat.st_ino:
-        # We reach here after logrotate for example: file was moved or deleted and another one is in his place
+      if new_stat.st_ino != stat.st_ino or new_stat.st_size < f.tell():
+        # We reach here after logrotate for example: file was moved or deleted and another one is in his place or file was zeroed
         f.close()
         del(self.filestore[filename])
         logging.debug('new_stat inode != old_stat inode')
