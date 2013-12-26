@@ -1,3 +1,9 @@
+lwatcher (0.1-13) unstable; urgency=low
+
+  * daemonize fixed
+
+ -- Pavel Vorobyov <viert@yandex-team.ru>  Thu, 26 Dec 2013 19:44:27 +0400
+
 lwatcher (0.1-12) unstable; urgency=low
 
   * args in var functions
