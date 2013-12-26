@@ -4,7 +4,7 @@ from lwatcher.lwlib import Watcher
 from lwatcher.daemontools import *
 from flask import Flask, make_response, request
 from ConfigParser import ConfigParser
-import json, sys, datetime, logging
+import json, sys, datetime, logging, os
 
 CONFIG_DIR = '/etc/lwatcher'
 CONFIG_FILE = CONFIG_DIR + '/lwatcher.conf'
@@ -44,9 +44,9 @@ def __startApplication():
   app.run(host=bind_host, port=bind_port)
   
 def startApplicationAsDaemon():
+  os.closerange(0,3)
   sys.stdout = open('%s/stdout.log' % logdir, "a")
   sys.stderr = open('%s/stderr.log' % logdir, "a")
-  sys.stdin.close()
   startDaemon(__startApplication, pidfile)
 
 def jsonFixer(obj):
