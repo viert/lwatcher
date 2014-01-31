@@ -37,7 +37,7 @@ except AttributeError:
   loglevel    = logging.__getattribute__(LOG_LEVEL)
 
 watcher = Watcher(COLLECTOR_CONFIG_DIR, logfile, plugin_dir, threads, loglevel)
-app = Flask('WatcherApplication')
+app = Flask(__name__)
 
 def __startApplication():
   watcher.start()
